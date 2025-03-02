@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rtc-tools-standard-library"
+version = "0.1.0"
+description = "Standard Modelica library for RTC-Tools ecosystem"
+authors = [
+    {name = "Joris Gillis", email = "joris@yacoda.com"}
+]
+dependencies = []
+readme = "README.md"
+license = {file = "LICENSE"}
+
+[project.entry-points."rtctools.libraries.modelica"]
+library_folder = "rtctools_standard_library:modelica"
+
+[tool.setuptools]
+packages = ["rtctools_standard_library"]
+package-dir = {"" = "src"}
+
