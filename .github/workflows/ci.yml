@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+  pull_request:
+
+jobs:
+  build-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+
+      - name: Install build dependencies
+        run: pip install hatchling hatch-vcs build
+
+      - name: Build wheel
+        run: python -m build --wheel
+
+      - name: Install wheel
+        run: pip install dist/*.whl
+
+      - name: Assert .mo files are present
+        run: |
+          python - <<'PYEOF'
+          import importlib.resources
+          import rtctools_standard_library
+          p = importlib.resources.files(rtctools_standard_library) / "modelica" / "Modelica" / "Units.mo"
+          assert p.is_file(), f"Units.mo not found at {p}"
+          print(f"OK: {p}")
+          PYEOF
+
+  deploy:
+    needs: build-and-validate
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+
+      - name: Install build dependencies
+        run: pip install hatchling hatch-vcs build
+
+      - name: Build package
+        run: python -m build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
