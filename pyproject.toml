@@ -1,22 +1,30 @@
 [build-system]
-requires = ["setuptools>=61"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
 [project]
 name = "rtc-tools-standard-library"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Standard Modelica library for RTC-Tools ecosystem"
 authors = [
     {name = "Joris Gillis", email = "joris@yacoda.com"}
 ]
+requires-python = ">=3.9"
 dependencies = []
 readme = "README.md"
-license = {file = "LICENSE"}
+license = {text = "BSD-3-Clause"}
+classifiers = [
+    "License :: OSI Approved :: BSD License",
+]
 
 [project.entry-points."rtctools.libraries.modelica"]
 library_folder = "rtctools_standard_library:modelica"
 
-[tool.setuptools]
-packages = ["rtctools_standard_library"]
-package-dir = {"" = "src"}
+[tool.hatch.version]
+source = "vcs"
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/rtctools_standard_library"]
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/rtctools_standard_library/_version.py"
