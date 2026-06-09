@@ -11,12 +11,17 @@ on:
 jobs:
   build-and-validate:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11"]
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.x"
+          python-version: ${{ matrix.python-version }}
 
       - name: Install build dependencies
         run: pip install hatchling hatch-vcs build
@@ -32,10 +37,18 @@ jobs:
           python - <<'PYEOF'
           import importlib.resources
           import rtctools_standard_library
-          p = importlib.resources.files(rtctools_standard_library) / "modelica" / "Modelica" / "Units.mo"
-          assert p.is_file(), f"Units.mo not found at {p}"
-          print(f"OK: {p}")
+          base = importlib.resources.files(rtctools_standard_library) / "modelica" / "Modelica"
+          for name in ("Units.mo", "SIunits.mo"):
+              p = base / name
+              assert p.is_file(), f"{name} not found at {p}"
+              print(f"OK: {p}")
           PYEOF
+
+      - name: Install pymoca
+        run: pip install "pymoca>=0.11,<0.12" casadi
+
+      - name: Test namespace resolution
+        run: python tests/test_namespaces.py
 
   deploy:
     needs: build-and-validate
