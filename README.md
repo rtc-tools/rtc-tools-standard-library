@@ -2,9 +2,14 @@ Subset of Modelica Standard Library that is required in rtc-tools and parsable b
 (which no longer declares Modelica as a builtin type,
 see https://github.com/pymoca/pymoca/commit/cf6d6a3b259983afe6e9d43c079da33901f17e34).
 
+`Modelica/Icons.mo` is vendored alongside `Modelica/Units.mo` and
+`Modelica/SIunits.mo` because both extend several `Modelica.Icons.*` classes
+that pymoca no longer resolves on its own.
+
 ## Included files
 
 | File | MSL version | Namespace |
 |---|---|---|
 | `Modelica/Units.mo` | 4.0.0 | `Modelica.Units.*` |
 | `Modelica/SIunits.mo` | 3.2.3 | `Modelica.SIunits.*` (deprecated, kept for backwards-compatibility with models that have not yet migrated) |
+| `Modelica/Icons.mo` | 4.0.0 | `Modelica.Icons.*` (vendored dependency of `Units.mo` and `SIunits.mo`) |
