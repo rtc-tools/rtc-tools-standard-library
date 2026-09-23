@@ -18,8 +18,6 @@ from pathlib import Path
 from importlib.metadata import entry_points
 import importlib.resources
 
-import pymoca.backends.casadi.api as pymoca_api
-
 
 def library_folders():
     folders = []
@@ -30,6 +28,8 @@ def library_folders():
 
 
 def parse(model_name, mo_src, lib_folders):
+    import pymoca.backends.casadi.api as pymoca_api
+
     with tempfile.TemporaryDirectory() as d:
         (Path(d) / f"{model_name}.mo").write_text(mo_src, encoding="utf-8")
         pymoca_api.transfer_model(d, model_name, {"cache": False, "library_folders": lib_folders})
