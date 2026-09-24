@@ -45,10 +45,15 @@ jobs:
           PYEOF
 
       - name: Install pymoca
-        run: pip install "pymoca>=0.11,<0.12" casadi
+        # casadi<3.6 has no cp311 wheels; casadi>=3.8.0 breaks pymoca 0.11.2's
+        # division codegen (AttributeError: 'MX' object has no attribute '__div__').
+        run: pip install "pymoca>=0.11,<0.12" "casadi>=3.6,<3.8" pytest
 
       - name: Test namespace resolution
         run: python tests/test_namespaces.py
+
+      - name: Test Modelica library coverage
+        run: pytest tests/test_modelica_library.py -v
 
   deploy:
     needs: build-and-validate

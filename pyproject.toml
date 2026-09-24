@@ -34,3 +34,6 @@ packages = ["src/rtctools_standard_library"]
 
 [tool.hatch.build.hooks.vcs]
 version-file = "src/rtctools_standard_library/_version.py"
+
+[tool.pytest.ini_options]
+xfail_strict = true

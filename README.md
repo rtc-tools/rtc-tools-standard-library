@@ -14,20 +14,26 @@ library.
 
 `Units.mo` and `SIunits.mo` also declare Complex-typed records (e.g.
 `ComplexCurrent`) that extend the standalone `Complex` operator record.
-That type is not vendored here: with pymoca 0.11.2, constructing any
-`Complex` value (even independent of this library) raises a
-`RecursionError` in the casadi backend's flattening step, so vendoring it
-would not make those types usable. Fully-qualified and locally-imported
-function calls (e.g. `Modelica.Units.Conversions.to_deg(...)`) were also
-observed to fail with the casadi backend independent of this library's
-content. Both are pymoca/casadi-backend limitations, not gaps in the
-vendored `.mo` files.
+That type is not vendored here. Constructing any `Complex` value (e.g.
+`Complex(1.0, 2.0)`) raises `pymoca.ast.ClassNotFoundError: Could not find
+class 'Complex'`.
+
+Function calls into `Modelica.Units.Conversions.*` behave differently
+depending on call form, observed with pymoca 0.11.2 (casadi 3.7.2 and
+3.8.1): equation-form calls (e.g. `equation x =
+Modelica.Units.Conversions.to_deg(1.0);`) resolve successfully.
+Declaration-binding-form calls raise `Unknown function <first segment>` —
+`Modelica.Units.Conversions.to_deg(1.0)` gives `Unknown function Modelica`,
+an unqualified local function call gives `Unknown function <that name>`.
+Separately, `casadi>=3.8.0` breaks any division operation under pymoca
+0.11.2 (`AttributeError: 'MX' object has no attribute '__div__'`), which is
+why CI pins `casadi<3.8.0`.
 
 ## Included files
 
 | File | MSL version | Namespace |
 |---|---|---|
 | `Modelica/Units.mo` | 4.0.0 | `Modelica.Units.*` |
-| `Modelica/SIunits.mo` | 3.2.3 | `Modelica.SIunits.*` (deprecated, kept for backwards-compatibility with models that have not yet migrated) |
+| `Modelica/SIunits.mo` | 3.2.3 | `Modelica.SIunits.*`, verbatim from the `maint/3.2.3` branch of `modelica/ModelicaStandardLibrary` (deprecated, kept for backwards-compatibility with models that have not yet migrated) |
 | `Modelica/Icons.mo` | 4.0.0 | `Modelica.Icons.*` (vendored dependency of `Units.mo` and `SIunits.mo`) |
 | `Modelica/Constants.mo` | — | `Modelica.Constants.*` (minimal subset: `pi`, `T_zero` only; see above) |

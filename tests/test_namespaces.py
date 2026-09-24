@@ -9,7 +9,7 @@ Exit code: 0 = all pass, 1 = one or more parse failures
 Standalone script (not pytest): pymoca is a heavy optional dep installed as a separate CI step.
 
 Usage (from a checkout, testing the working tree):
-  pip install -e . "pymoca>=0.11,<0.12" casadi
+  pip install -e . "pymoca>=0.11,<0.12" "casadi>=3.6,<3.8"
   python tests/test_namespaces.py
 """
 import sys
